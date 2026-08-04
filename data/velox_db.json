@@ -1,0 +1,163 @@
+{
+  "models": [
+    {
+      "id": "m1",
+      "slug": "velox-sanctuary-1",
+      "name": "VELOX Sanctuary I",
+      "tagline": "The Sovereign Flagship",
+      "description": "An autonomous sanctuary engineered for unyielding serenity. Featuring dual 400kW neural motors and active acoustic cancellation.",
+      "price_starting": 620000,
+      "annual_production_limit": 47,
+      "hero_image": "/images/sanctuary_1.jpg",
+      "range_miles": 480,
+      "acceleration_0_60": 2.4,
+      "top_speed_mph": 210,
+      "nvh_rating_db": 18.2,
+      "power_hp": 1050,
+      "battery_kwh": 140,
+      "autonomous_level": "Level 5 Neural Core"
+    },
+    {
+      "id": "m2",
+      "slug": "velox-sanctuary-2-apex",
+      "name": "VELOX Sanctuary II Apex",
+      "tagline": "The Peak of Autonomous Performance",
+      "description": "Quad-torque vectoring meets titanium carbon monocoque construction. Engineered for heads of state and visionary leaders.",
+      "price_starting": 780000,
+      "annual_production_limit": 25,
+      "hero_image": "/images/sanctuary_apex.jpg",
+      "range_miles": 520,
+      "acceleration_0_60": 1.9,
+      "top_speed_mph": 230,
+      "nvh_rating_db": 16.5,
+      "power_hp": 1280,
+      "battery_kwh": 165,
+      "autonomous_level": "Level 5 Neural Core Extreme"
+    },
+    {
+      "id": "m3",
+      "slug": "velox-sovereign-spectre",
+      "name": "VELOX Sovereign Spectre",
+      "tagline": "Bespoke Obsidian Perfection",
+      "description": "Completely customized to individual client biometric profiles. Features diamond-weave gold thread upholstery and zero-vibration cocoon.",
+      "price_starting": 950000,
+      "annual_production_limit": 12,
+      "hero_image": "/images/sovereign_spectre.jpg",
+      "range_miles": 600,
+      "acceleration_0_60": 1.8,
+      "top_speed_mph": 245,
+      "nvh_rating_db": 14.0,
+      "power_hp": 1500,
+      "battery_kwh": 190,
+      "autonomous_level": "Level 5 Bespoke Neural Matrix"
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "h1",
+      "model_id": "m1",
+      "title": "Quantum Acoustic Shielding",
+      "category": "interior",
+      "position_x": 35.5,
+      "position_y": 42.0,
+      "description": "Active anti-resonance sound cancellation matrix neutralizing 99.8% of external ambient frequencies, preserving pristine cabin silence.",
+      "spec_detail": "18.2 dB Whisper Threshold"
+    },
+    {
+      "id": "h2",
+      "model_id": "m1",
+      "title": "Aniline Leather Lounge Recliner",
+      "category": "interior",
+      "position_x": 58.0,
+      "position_y": 55.0,
+      "description": "Zero-gravity heated & ventilated lounge seating wrapped in hand-selected unblemished Nordic leather with gold stitching.",
+      "spec_detail": "14-Way Pneumatic Massage"
+    },
+    {
+      "id": "h3",
+      "model_id": "m1",
+      "title": "Neural Autonomous Core",
+      "category": "drive",
+      "position_x": 20.0,
+      "position_y": 30.0,
+      "description": "Dual optical Lidar & quantum neural processor capable of 2.4 quadrillion floating-point calculations per second.",
+      "spec_detail": "Full Level 5 Autonomy"
+    },
+    {
+      "id": "h4",
+      "model_id": "m1",
+      "title": "Machined Titanium Steering Sphere",
+      "category": "interior",
+      "position_x": 72.0,
+      "position_y": 38.0,
+      "description": "Retractable aerospace-grade titanium control sphere with fluid haptic force feedback for effortless manual command.",
+      "spec_detail": "Grade 5 Aerospace Titanium"
+    },
+    {
+      "id": "h5",
+      "model_id": "m1",
+      "title": "Electrochromic Privacy Canopy",
+      "category": "exterior",
+      "position_x": 48.0,
+      "position_y": 22.0,
+      "description": "Smart glass roof capable of adjusting light opacity from crystal clear to complete obsidian shade in under 50 milliseconds.",
+      "spec_detail": "9-Layer UV & Infra-Red Filter"
+    },
+    {
+      "id": "h6",
+      "model_id": "m1",
+      "title": "Kinetic Obsidian Wheel Aero-Vanes",
+      "category": "exterior",
+      "position_x": 80.0,
+      "position_y": 70.0,
+      "description": "Active carbon fiber aero-vanes that adjust wheel turbulence dynamically at high velocity for optimum drag efficiency.",
+      "spec_detail": "Cd 0.18 Drag Coefficient"
+    }
+  ],
+  "press_quotes": [
+    {
+      "id": "pq1",
+      "publication": "Robb Report",
+      "quote": "The benchmark for 22nd-century mobility. VELOX makes traditional ultra-luxury feel like steam engines.",
+      "author": "Automotive Editor-in-Chief"
+    },
+    {
+      "id": "pq2",
+      "publication": "Wall Street Journal",
+      "quote": "Redefining autonomous elegance. A private sanctuary that outpaces supercars while whispering.",
+      "author": "Tech & Mobility Review"
+    },
+    {
+      "id": "pq3",
+      "publication": "Architectural Digest",
+      "quote": "A kinetic masterpiece of obsidian architecture. Inside VELOX, motion has never been this still.",
+      "author": "Design & Innovation Feature"
+    }
+  ],
+  "consultations": [
+    {
+      "id": "c_seed_1",
+      "full_name": "Lord Alistair Harrington",
+      "email": "harrington@sovereign-holdings.co.uk",
+      "country": "United Kingdom",
+      "contact_method": "Private Concierge Call",
+      "contact_info": "+44 20 7946 0912",
+      "preferred_timeframe": "Q3 2026",
+      "model_interest": "VELOX Sanctuary II Apex",
+      "notes": "Requesting bespoke gold leaf exterior inlay and private track test in Silverston.",
+      "created_at": "2026-08-01T10:00:00Z"
+    },
+    {
+      "id": "c_seed_2",
+      "full_name": "Elena Vance",
+      "email": "e.vance@vance-capital.ch",
+      "country": "Switzerland",
+      "contact_method": "Encrypted Email",
+      "contact_info": "e.vance@vance-capital.ch",
+      "preferred_timeframe": "Immediate Delivery",
+      "model_interest": "VELOX Sovereign Spectre",
+      "notes": "Interested in Level 5 autonomous cross-Alpine touring package.",
+      "created_at": "2026-08-03T14:30:00Z"
+    }
+  ]
+}

@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
   :root {
     --bg-obsidian: #0A0A0A;
     --text-velox: #E8E0D0;
