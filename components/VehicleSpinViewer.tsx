@@ -61,6 +61,7 @@ export default function VehicleSpinViewer() {
   const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef<number>(0);
   const angleAtStartRef = useRef<number>(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Auto-spin timer
   useEffect(() => {
@@ -70,6 +71,13 @@ export default function VehicleSpinViewer() {
     }, 40);
     return () => clearInterval(interval);
   }, [isAutoSpinning]);
+
+  // Sync video to rotation angle
+  useEffect(() => {
+    if (videoRef.current && videoRef.current.duration) {
+      videoRef.current.currentTime = (rotationAngle / 360) * videoRef.current.duration;
+    }
+  }, [rotationAngle]);
 
   // Touch & Mouse Drag handlers for 360 spin
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -160,107 +168,31 @@ export default function VehicleSpinViewer() {
         <div
           className="relative transition-transform duration-75 flex items-center justify-center"
           style={{
-            transform: `perspective(1000px) rotateY(${sinVal * 25}deg) scale(${1 + Math.abs(cosVal) * 0.08})`,
+            transform: `perspective(1000px) scale(${1 + Math.abs(cosVal) * 0.08})`,
           }}
         >
           {/* Floor Shadow */}
           <div
-            className="absolute bottom-[-40px] w-[320px] md:w-[480px] h-[40px] rounded-full blur-xl opacity-80 transition-all duration-300"
+            className="absolute bottom-[-20px] w-[320px] md:w-[480px] h-[40px] rounded-full blur-xl opacity-80 transition-all duration-300"
             style={{
               backgroundColor: selectedColorway.accentColor,
               transform: `scaleX(${0.8 + Math.abs(cosVal) * 0.4})`,
             }}
           />
 
-          {/* SVG Vehicle Representation */}
-          <svg
-            width="520"
-            height="260"
-            viewBox="0 0 520 260"
-            className="w-full max-w-[480px] md:max-w-[540px] drop-shadow-[0_20px_30px_rgba(0,0,0,0.9)]"
-          >
-            <defs>
-              <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={selectedColorway.bodyColor} />
-                <stop offset="50%" stopColor="#1C1E22" />
-                <stop offset="100%" stopColor={selectedColorway.bodyColor} />
-              </linearGradient>
-
-              <linearGradient id="goldAccentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#E2C68A" />
-                <stop offset="50%" stopColor={selectedColorway.accentColor} />
-                <stop offset="100%" stopColor="#866A36" />
-              </linearGradient>
-
-              <linearGradient id="glassCanopy" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(201, 169, 110, 0.4)" />
-                <stop offset="60%" stopColor="rgba(10, 10, 10, 0.95)" />
-              </linearGradient>
-            </defs>
-
-            {/* Aerodynamic Body Contour */}
-            <path
-              d="M 40 170 Q 70 120, 150 100 Q 230 75, 330 80 Q 430 90, 480 160 Q 490 180, 470 185 L 50 185 Z"
-              fill="url(#bodyGrad)"
-              stroke={selectedColorway.accentColor}
-              strokeWidth="1.5"
-              className="transition-all duration-500"
-            />
-
-            {/* Electrochromic Glass Canopy */}
-            <path
-              d="M 140 102 Q 220 78, 320 84 Q 380 95, 410 130 L 160 130 Z"
-              fill="url(#glassCanopy)"
-              stroke="rgba(201, 169, 110, 0.6)"
-              strokeWidth="1"
-            />
-
-            {/* Gold Aero Trim Line */}
-            <path
-              d="M 50 170 Q 150 165, 300 168 Q 440 170, 475 165"
-              fill="none"
-              stroke="url(#goldAccentGrad)"
-              strokeWidth="2.5"
-            />
-
-            {/* Front Headlight Optics Beam */}
-            <path
-              d="M 460 160 L 515 155 L 510 175 Z"
-              fill={selectedColorway.accentColor}
-              className="animate-pulse-slow opacity-90"
-            />
-            <line
-              x1="465"
-              y1="165"
-              x2="520"
-              y2="165"
-              stroke={lightingMode.glow}
-              strokeWidth="4"
-              strokeLinecap="round"
-              className="blur-[2px]"
-            />
-
-            {/* Front Wheel Aero-Vane */}
-            <g transform={`translate(${110 + sinVal * 10}, 180)`}>
-              <circle r="34" fill="#0A0A0A" stroke={selectedColorway.accentColor} strokeWidth="2" />
-              <circle r="22" fill="#141414" stroke="#444" strokeWidth="1" />
-              {/* Rotating Vanes */}
-              <line x1="-20" y1="0" x2="20" y2="0" stroke={selectedColorway.accentColor} strokeWidth="2" transform={`rotate(${rotationAngle * 3})`} />
-              <line x1="0" y1="-20" x2="0" y2="20" stroke={selectedColorway.accentColor} strokeWidth="2" transform={`rotate(${rotationAngle * 3})`} />
-            </g>
-
-            {/* Rear Wheel Aero-Vane */}
-            <g transform={`translate(${390 - sinVal * 10}, 180)`}>
-              <circle r="34" fill="#0A0A0A" stroke={selectedColorway.accentColor} strokeWidth="2" />
-              <circle r="22" fill="#141414" stroke="#444" strokeWidth="1" />
-              <line x1="-20" y1="0" x2="20" y2="0" stroke={selectedColorway.accentColor} strokeWidth="2" transform={`rotate(${rotationAngle * 3})`} />
-              <line x1="0" y1="-20" x2="0" y2="20" stroke={selectedColorway.accentColor} strokeWidth="2" transform={`rotate(${rotationAngle * 3})`} />
-            </g>
-
-            {/* Neural Autonomous Lidar Sensor Dome */}
-            <circle cx="270" cy="81" r="5" fill="#C9A96E" className="animate-ping opacity-75" />
-            <circle cx="270" cy="81" r="3" fill="#FFF" />
-          </svg>
+          {/* Video Vehicle Representation */}
+          <video
+            ref={videoRef}
+            src="/assets/car_spin.mp4"
+            muted
+            playsInline
+            className="w-full max-w-[600px] mix-blend-screen drop-shadow-[0_20px_30px_rgba(0,0,0,0.9)]"
+            onLoadedMetadata={(e) => {
+              if (videoRef.current) {
+                videoRef.current.currentTime = (rotationAngle / 360) * videoRef.current.duration;
+              }
+            }}
+          />
         </div>
 
         {/* Drag Instruction Cue */}

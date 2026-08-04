@@ -28,9 +28,10 @@ export default function RootLayout({
       <body className="bg-obsidian-900 text-velox-text antialiased min-h-screen flex flex-col font-sans">
         <CustomCursor />
         <Navbar />
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow"><SmoothScrollProvider>{children}</SmoothScrollProvider></main>
         <Footer />
       </body>
     </html>
   );
 }
+\nimport SmoothScrollProvider from '@/components/SmoothScrollProvider';
