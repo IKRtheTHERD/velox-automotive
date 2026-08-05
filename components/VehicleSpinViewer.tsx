@@ -54,7 +54,7 @@ const LIGHTING_MODES = [
 ];
 
 export default function VehicleSpinViewer() {
-  const [rotationAngle, setRotationAngle] = useState(45); // 0 to 360 degrees
+  const [rotationAngle, setRotationAngle] = useState(45);
   const [selectedColorway, setSelectedColorway] = useState<Colorway>(COLORWAYS[0]);
   const [lightingMode, setLightingMode] = useState(LIGHTING_MODES[0]);
   const [isAutoSpinning, setIsAutoSpinning] = useState(false);
@@ -63,24 +63,59 @@ export default function VehicleSpinViewer() {
   const angleAtStartRef = useRef<number>(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Helper: scrub video directly without waiting for state re-render
+  // RAF throttle ref — ensures we only seek once per animation frame, not per mousemove
+  const pendingAngleRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const currentAngleRef = useRef<number>(45);
+
+  // The ONLY place we touch video.currentTime — runs at most 60fps via RAF
+  const flushVideoScrub = () => {
+    if (pendingAngleRef.current !== null && videoRef.current && videoRef.current.duration) {
+      videoRef.current.currentTime = (pendingAngleRef.current / 360) * videoRef.current.duration;
+      pendingAngleRef.current = null;
+    }
+    rafRef.current = null;
+  };
+
+  // Queue a seek — replaces any pending seek, fires via RAF
   const scrubVideo = (angle: number) => {
-    if (videoRef.current && videoRef.current.duration) {
-      videoRef.current.currentTime = (angle / 360) * videoRef.current.duration;
+    pendingAngleRef.current = angle;
+    currentAngleRef.current = angle;
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(flushVideoScrub);
     }
   };
 
-  // Auto-spin timer
+  // Cleanup RAF on unmount
   useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  // Auto-spin — uses RAF for smooth 60fps instead of setInterval
+  const autoSpinRef = useRef<boolean>(false);
+  const autoAngleRef = useRef<number>(45);
+
+  useEffect(() => {
+    autoSpinRef.current = isAutoSpinning;
     if (!isAutoSpinning) return;
-    const interval = setInterval(() => {
-      setRotationAngle((prev) => {
-        const next = (prev + 1) % 360;
-        scrubVideo(next);
-        return next;
-      });
-    }, 40);
-    return () => clearInterval(interval);
+
+    let lastTime: number | null = null;
+    const tick = (timestamp: number) => {
+      if (!autoSpinRef.current) return;
+      if (lastTime === null) lastTime = timestamp;
+      const delta = timestamp - lastTime;
+      lastTime = timestamp;
+      // Advance ~36deg/sec = full 360 in 10 seconds
+      autoAngleRef.current = (autoAngleRef.current + delta * 0.036) % 360;
+      const next = Math.round(autoAngleRef.current);
+      setRotationAngle(next);
+      scrubVideo(next);
+      requestAnimationFrame(tick);
+    };
+    const raf = requestAnimationFrame(tick);
+    return () => { autoSpinRef.current = false; cancelAnimationFrame(raf); };
   }, [isAutoSpinning]);
 
   // Touch & Mouse Drag handlers for 360 spin
@@ -94,11 +129,13 @@ export default function VehicleSpinViewer() {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
     const deltaX = e.clientX - startXRef.current;
-    let newAngle = (angleAtStartRef.current + deltaX * 0.3) % 360; // Reduced sensitivity for smoother, finer control
+    let newAngle = (angleAtStartRef.current + deltaX * 0.3) % 360;
     if (newAngle < 0) newAngle += 360;
     const rounded = Math.round(newAngle);
+    // Only update React state occasionally (for the angle badge display),
+    // but ALWAYS queue the video seek via RAF for zero-stutter scrubbing
     setRotationAngle(rounded);
-    scrubVideo(rounded); // instant, no state delay
+    scrubVideo(rounded);
   };
 
   const handleMouseUp = () => {
