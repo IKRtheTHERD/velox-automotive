@@ -94,7 +94,7 @@ export default function VehicleSpinViewer() {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
     const deltaX = e.clientX - startXRef.current;
-    let newAngle = (angleAtStartRef.current + deltaX * 0.5) % 360;
+    let newAngle = (angleAtStartRef.current + deltaX * 0.3) % 360; // Reduced sensitivity for smoother, finer control
     if (newAngle < 0) newAngle += 360;
     const rounded = Math.round(newAngle);
     setRotationAngle(rounded);
@@ -105,75 +105,75 @@ export default function VehicleSpinViewer() {
     setIsDragging(false);
   };
 
-  // Convert rotation angle into visual scale and perspective transforms
-  const rad = (rotationAngle * Math.PI) / 180;
-  const sinVal = Math.sin(rad);
-  const cosVal = Math.cos(rad);
+  const cosVal = Math.cos((rotationAngle * Math.PI) / 180);
 
   return (
-    <div className="bg-obsidian-900 border border-obsidian-600 rounded-xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
-      {/* Background ambient lighting glow based on mode */}
-      <div
-        className="absolute inset-0 pointer-events-none transition-all duration-700 opacity-20"
-        style={{
-          background: `radial-gradient(circle at 50% 40%, ${lightingMode.glow} 0%, transparent 70%)`,
-        }}
-      />
+    <section className="py-24 bg-obsidian-950 border-t border-obsidian-800 relative overflow-hidden" id="spin">
+      <div className="absolute inset-0 bg-obsidian-noise opacity-40 mix-blend-overlay pointer-events-none" />
 
-      {/* Top Header Control Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-obsidian-700 relative z-10">
-        <div>
-          <div className="flex items-center gap-2 text-gold-500 font-mono text-xs uppercase tracking-widest mb-1">
-            <RotateCw className="w-3.5 h-3.5 animate-spin-slow" />
-            3D Vehicle Spin Simulator
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="bg-obsidian-900 border border-gold-500/10 rounded-2xl p-6 md:p-10 shadow-2xl relative">
+          
+          {/* Top Header Control Bar */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-obsidian-700 relative z-10">
+            <div>
+              <div className="flex items-center gap-2 text-gold-500 font-mono text-xs uppercase tracking-widest mb-1">
+                <RotateCw className="w-3.5 h-3.5 animate-spin-slow" />
+                3D Vehicle Spin Simulator
+              </div>
+              <h3 className="font-serif text-2xl text-velox-text font-light tracking-wide">
+                VELOX Sanctuary I — 270° Interactive View Switcher
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsAutoSpinning(!isAutoSpinning)}
+                className={`px-4 py-2 rounded text-xs font-mono tracking-wider transition-all border ${
+                  isAutoSpinning
+                    ? 'bg-gold-500 text-obsidian-950 border-gold-400 font-semibold shadow-[0_0_15px_rgba(201,169,110,0.4)]'
+                    : 'bg-obsidian-800 text-gold-400 border-gold-500/30 hover:border-gold-400'
+                }`}
+              >
+                {isAutoSpinning ? 'Pause Auto Spin' : 'Auto 360° Spin'}
+              </button>
+            </div>
           </div>
-          <h3 className="font-serif text-2xl text-velox-text font-light tracking-wide">
-            VELOX Sanctuary I — 270° Interactive View Switcher
-          </h3>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsAutoSpinning(!isAutoSpinning)}
-            className={`px-4 py-2 rounded text-xs font-mono tracking-wider transition-all border ${
-              isAutoSpinning
-                ? 'bg-gold-500 text-obsidian-950 border-gold-400 font-semibold shadow-[0_0_15px_rgba(201,169,110,0.4)]'
-                : 'bg-obsidian-800 text-gold-400 border-gold-500/30 hover:border-gold-400'
-            }`}
+          {/* Full-width Video Display (Cinematic Crop) */}
+          <div
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            className="relative w-full bg-black rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none group border border-obsidian-800"
+            style={{ 
+              aspectRatio: '21/9', // Compress vertically to crop out top studio softboxes
+              WebkitMaskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%, black 70%, transparent 100%)', // Fade edges smoothly into the UI
+              maskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%, black 70%, transparent 100%)'
+            }}
           >
-            {isAutoSpinning ? 'Pause Auto Spin' : 'Auto 360° Spin'}
-          </button>
-        </div>
-      </div>
+            {/* Ambient lighting glow from selected mode */}
+            <div
+              className="absolute inset-0 pointer-events-none z-10 transition-all duration-700"
+              style={{
+                background: `radial-gradient(ellipse at 50% 100%, ${lightingMode.glow} 0%, transparent 60%)`,
+              }}
+            />
 
-      {/* Full-width Video Display */}
-      <div
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        className="relative w-full bg-black rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none group"
-        style={{ aspectRatio: '16/9' }}
-      >
-        {/* Ambient lighting glow from selected mode */}
-        <div
-          className="absolute inset-0 pointer-events-none z-10 transition-all duration-700"
-          style={{
-            background: `radial-gradient(ellipse at 50% 100%, ${lightingMode.glow} 0%, transparent 60%)`,
-          }}
-        />
-
-        {/* Video — fills 100% of container */}
-        <video
-          ref={videoRef}
-          src="/assets/car_spin.mp4"
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          onLoadedMetadata={() => {
-            scrubVideo(rotationAngle);
-          }}
-        />
+            {/* Video — object-cover zooms in to fill the 21:9 box, effectively cropping out the white top corners */}
+            <video
+              ref={videoRef}
+              src="/assets/car_spin.mp4"
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 w-full h-full object-cover scale-[1.05]" // slight scale to ensure no edge bleed
+              onLoadedMetadata={() => {
+                scrubVideo(rotationAngle);
+              }}
+            />
+          </div>
 
         {/* Rotation Angle Overlay Badge */}
         <div className="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur border border-gold-500/30 px-3 py-1.5 rounded text-[11px] font-mono text-gold-400 flex items-center gap-2">
