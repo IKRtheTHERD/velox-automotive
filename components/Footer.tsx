@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import { Shield, ArrowUpRight } from 'lucide-react';
 
@@ -77,7 +77,7 @@ export default function Footer() {
         <div className="space-y-3">
           <h4 className="text-xs font-mono uppercase tracking-[0.2em] text-gold-400">Client Concierge</h4>
           <p className="text-xs leading-relaxed">
-            Geneva • London • Tokyo • Dubai • Silicon Valley
+            Geneva â€¢ London â€¢ Tokyo â€¢ Dubai â€¢ Silicon Valley
           </p>
           <div className="pt-2">
             <span className="text-[10px] font-mono text-velox-dim block">GLOBAL HEADQUARTERS</span>
@@ -88,8 +88,8 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-obsidian-750 flex flex-col md:flex-row items-center justify-between text-[11px] font-mono text-velox-dim gap-4">
         <div className="flex flex-col gap-1">
-          <p>© 2025 SimaVision x Ibrahim. All rights reserved.</p>
-          <p>Designed & Developed by SimaVision x Ibrahim</p>
+          <p>Â© 2025 SimaVision x Ibrahim. All rights reserved.</p>
+          <p>MADE BY IBRAHIM K.R</p>
         </div>
         <div className="flex items-center gap-6">
           <span className="hover:text-velox-muted cursor-pointer">Privacy Protocol</span>
@@ -100,3 +100,4 @@ export default function Footer() {
     </footer>
   );
 }
+
