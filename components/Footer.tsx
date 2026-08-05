@@ -87,7 +87,10 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto pt-8 border-t border-obsidian-750 flex flex-col md:flex-row items-center justify-between text-[11px] font-mono text-velox-dim gap-4">
-        <p>© {new Date().getFullYear()} VELOX Automotive S.A. All rights reserved. Confidential Sovereign Series.</p>
+        <div className="flex flex-col gap-1">
+          <p>© 2025 SimaVision x Ibrahim. All rights reserved.</p>
+          <p>Designed & Developed by SimaVision x Ibrahim</p>
+        </div>
         <div className="flex items-center gap-6">
           <span className="hover:text-velox-muted cursor-pointer">Privacy Protocol</span>
           <span className="hover:text-velox-muted cursor-pointer">Terms of Bespoke Order</span>
