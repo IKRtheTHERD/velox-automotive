@@ -6,11 +6,11 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
   useEffect(() => {
     const lenis = new Lenis({
       autoRaf: true,
-      duration: 1.8,
-      // Ease-In-Out S-Curve: starts slow, accelerates smoothly, then glides to a gradual stop
-      easing: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+      // Using lerp instead of duration/easing provides organic momentum stacking
+      // and eliminates the feeling of "lag" on initial scroll.
+      lerp: 0.08,
       smoothWheel: true,
-      wheelMultiplier: 0.9,
+      wheelMultiplier: 1.0,
       touchMultiplier: 1.5,
     });
 
