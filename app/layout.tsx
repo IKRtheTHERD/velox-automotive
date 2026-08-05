@@ -3,6 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CustomCursor from '@/components/CustomCursor';
+import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 
 export const metadata: Metadata = {
   title: 'VELOX Automotive — Autonomous Luxury Mobility',
@@ -28,10 +29,11 @@ export default function RootLayout({
       <body className="bg-obsidian-900 text-velox-text antialiased min-h-screen flex flex-col font-sans">
         <CustomCursor />
         <Navbar />
-        <main className="flex-grow"><SmoothScrollProvider>{children}</SmoothScrollProvider></main>
+        <main className="flex-grow">
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </main>
         <Footer />
       </body>
     </html>
   );
 }
-\nimport SmoothScrollProvider from '@/components/SmoothScrollProvider';

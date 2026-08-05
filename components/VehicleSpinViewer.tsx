@@ -63,21 +63,25 @@ export default function VehicleSpinViewer() {
   const angleAtStartRef = useRef<number>(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Helper: scrub video directly without waiting for state re-render
+  const scrubVideo = (angle: number) => {
+    if (videoRef.current && videoRef.current.duration) {
+      videoRef.current.currentTime = (angle / 360) * videoRef.current.duration;
+    }
+  };
+
   // Auto-spin timer
   useEffect(() => {
     if (!isAutoSpinning) return;
     const interval = setInterval(() => {
-      setRotationAngle((prev) => (prev + 1) % 360);
+      setRotationAngle((prev) => {
+        const next = (prev + 1) % 360;
+        scrubVideo(next);
+        return next;
+      });
     }, 40);
     return () => clearInterval(interval);
   }, [isAutoSpinning]);
-
-  // Sync video to rotation angle
-  useEffect(() => {
-    if (videoRef.current && videoRef.current.duration) {
-      videoRef.current.currentTime = (rotationAngle / 360) * videoRef.current.duration;
-    }
-  }, [rotationAngle]);
 
   // Touch & Mouse Drag handlers for 360 spin
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -92,7 +96,9 @@ export default function VehicleSpinViewer() {
     const deltaX = e.clientX - startXRef.current;
     let newAngle = (angleAtStartRef.current + deltaX * 0.5) % 360;
     if (newAngle < 0) newAngle += 360;
-    setRotationAngle(Math.round(newAngle));
+    const rounded = Math.round(newAngle);
+    setRotationAngle(rounded);
+    scrubVideo(rounded); // instant, no state delay
   };
 
   const handleMouseUp = () => {
@@ -140,76 +146,63 @@ export default function VehicleSpinViewer() {
         </div>
       </div>
 
-      {/* 3D Canvas / Render Display Box */}
+      {/* Full-width Video Display */}
       <div
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="relative w-full h-[360px] md:h-[440px] bg-obsidian-950 rounded-lg border border-obsidian-750 flex items-center justify-center cursor-grab active:cursor-grabbing select-none overflow-hidden group"
+        className="relative w-full bg-black rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none group"
+        style={{ aspectRatio: '16/9' }}
       >
-        {/* Grid lines floor projection */}
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#C9A96E_1px,transparent_1px)] [background-size:16px_16px]" />
+        {/* Ambient lighting glow from selected mode */}
+        <div
+          className="absolute inset-0 pointer-events-none z-10 transition-all duration-700"
+          style={{
+            background: `radial-gradient(ellipse at 50% 100%, ${lightingMode.glow} 0%, transparent 60%)`,
+          }}
+        />
+
+        {/* Video — fills 100% of container */}
+        <video
+          ref={videoRef}
+          src="/assets/car_spin.mp4"
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          onLoadedMetadata={() => {
+            scrubVideo(rotationAngle);
+          }}
+        />
 
         {/* Rotation Angle Overlay Badge */}
-        <div className="absolute top-4 left-4 z-20 bg-obsidian-900/80 backdrop-blur border border-obsidian-600 px-3 py-1.5 rounded text-[11px] font-mono text-gold-400 flex items-center gap-2">
+        <div className="absolute top-4 left-4 z-20 bg-black/70 backdrop-blur border border-gold-500/30 px-3 py-1.5 rounded text-[11px] font-mono text-gold-400 flex items-center gap-2">
           <Sliders className="w-3.5 h-3.5" />
           <span>Angle: {Math.round(rotationAngle)}°</span>
-          <span className="text-velox-dim">| Drag horizontal to rotate</span>
+          <span className="text-gold-500/50">| Drag to rotate</span>
         </div>
 
         {/* Lighting Mode Badge */}
-        <div className="absolute top-4 right-4 z-20 bg-obsidian-900/80 backdrop-blur border border-obsidian-600 px-3 py-1.5 rounded text-[11px] font-mono text-velox-muted flex items-center gap-2">
+        <div className="absolute top-4 right-4 z-20 bg-black/70 backdrop-blur border border-gold-500/30 px-3 py-1.5 rounded text-[11px] font-mono text-velox-muted flex items-center gap-2">
           <Sun className="w-3.5 h-3.5 text-gold-400" />
           <span>{lightingMode.name}</span>
         </div>
 
-        {/* 3D Vehicle Rendering Container (SVG / Canvas Dynamic Silhouette) */}
-        <div
-          className="relative transition-transform duration-75 flex items-center justify-center"
-          style={{
-            transform: `perspective(1000px) scale(${1 + Math.abs(cosVal) * 0.08})`,
-          }}
-        >
-          {/* Floor Shadow */}
-          <div
-            className="absolute bottom-[-20px] w-[320px] md:w-[480px] h-[40px] rounded-full blur-xl opacity-80 transition-all duration-300"
-            style={{
-              backgroundColor: selectedColorway.accentColor,
-              transform: `scaleX(${0.8 + Math.abs(cosVal) * 0.4})`,
-            }}
-          />
-
-          {/* Video Vehicle Representation */}
-          <video
-            ref={videoRef}
-            src="/assets/car_spin.mp4"
-            muted
-            playsInline
-            className="w-full max-w-[600px] mix-blend-screen drop-shadow-[0_20px_30px_rgba(0,0,0,0.9)]"
-            onLoadedMetadata={(e) => {
-              if (videoRef.current) {
-                videoRef.current.currentTime = (rotationAngle / 360) * videoRef.current.duration;
-              }
-            }}
-          />
-        </div>
-
-        {/* Drag Instruction Cue */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-obsidian-900/90 border border-obsidian-600 px-4 py-1.5 rounded-full text-[10px] font-mono text-gold-400 opacity-80 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+        {/* Drag hint */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/70 backdrop-blur border border-gold-500/30 px-4 py-1.5 rounded-full text-[10px] font-mono text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
           <Sparkles className="w-3 h-3" />
-          Drag or move slider below to rotate 360°
+          Drag left / right · or use slider below
         </div>
       </div>
 
       {/* Rotation Angle Slider Control */}
-      <div className="mt-6 space-y-2 relative z-10">
+      <div className="mt-4 space-y-2 relative z-10">
         <div className="flex items-center justify-between text-xs font-mono text-velox-muted">
           <span>0° Front</span>
-          <span>90° Side Profile</span>
-          <span>180° Rear Apex</span>
-          <span>270° 3/4 View</span>
-          <span>360° Full Loop</span>
+          <span>90° Side</span>
+          <span>180° Rear</span>
+          <span>270° 3/4</span>
+          <span>360°</span>
         </div>
         <input
           type="range"
@@ -218,9 +211,11 @@ export default function VehicleSpinViewer() {
           value={rotationAngle}
           onChange={(e) => {
             setIsAutoSpinning(false);
-            setRotationAngle(parseInt(e.target.value));
+            const angle = parseInt(e.target.value);
+            setRotationAngle(angle);
+            scrubVideo(angle); // instant scrub, no state delay
           }}
-          className="w-full h-1.5 bg-obsidian-750 rounded-lg appearance-none cursor-pointer accent-gold-500 focus:outline-none"
+          className="w-full h-2 bg-obsidian-750 rounded-lg appearance-none cursor-pointer accent-gold-500 focus:outline-none"
         />
       </div>
 
