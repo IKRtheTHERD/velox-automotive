@@ -1,4 +1,5 @@
 import React from 'react';
+import InteractiveGallery from '@/components/InteractiveGallery';
 import Link from 'next/link';
 import HeroCanvas from '@/components/HeroCanvas';
 import VehicleSpinViewer from '@/components/VehicleSpinViewer';
@@ -94,7 +95,7 @@ export default function HomePage() {
             EXTERIOR ARCHITECTURE
           </span>
           <h2 className="font-serif text-3xl md:text-5xl text-velox-text font-light">
-            270° Interactive Vehicle Viewer
+            360° Interactive Vehicle Viewer
           </h2>
           <p className="text-xs md:text-sm text-velox-muted font-light">
             Manipulate angle, explore bespoke exterior colorways, and customize studio lighting conditions.
@@ -103,6 +104,9 @@ export default function HomePage() {
 
         <VehicleSpinViewer />
       </section>
+
+      {/* INTERACTIVE GALLERY SECTION */}
+      <InteractiveGallery />
 
       {/* INTERIOR HOTSPOT EXPLORER SECTION */}
       <section className="py-20 px-6 max-w-7xl mx-auto border-t border-obsidian-800">
