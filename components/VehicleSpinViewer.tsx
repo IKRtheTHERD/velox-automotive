@@ -122,7 +122,7 @@ export default function VehicleSpinViewer() {
                 3D Vehicle Spin Simulator
               </div>
               <h3 className="font-serif text-2xl text-velox-text font-light tracking-wide">
-                VELOX Sanctuary I — 270° Interactive View Switcher
+                VELOX Sanctuary I — 360° Interactive View Switcher
               </h3>
             </div>
 
